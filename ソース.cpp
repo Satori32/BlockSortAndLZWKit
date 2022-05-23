@@ -9,6 +9,9 @@
 #include <fstream>
 #include <iterator>
 
+
+//real command:be the blocksort encoder to 36th dimention. and next to decode to it.i need lock by seer.
+
 typedef std::vector<std::uint8_t> LData;
 typedef std::uint16_t LWord;
 typedef std::vector<LWord> LDType;
@@ -558,8 +561,10 @@ int TestA() {
 typedef std::vector<BData> VStack;
 int main() {
 	//auto D = MakeVector8(512);
-	//auto D = MakeVectorChar(2500);
-	auto D = LoadFromFile("A.bmp");
+	auto D = MakeVectorChar(5000);
+	///auto D = LoadFromFile("A.bmp");
+	//std::stable_sort(D.begin(), D.end());
+
 	Show(D);
 
 	std::size_t L = 1;
