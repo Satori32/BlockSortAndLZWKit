@@ -558,6 +558,27 @@ int TestA() {
 	return 0;
 
 }
+
+#pragma warning (disable : 4700)
+
+bool BashTheSystem21() {
+
+	//Bash The System 21 in Real.
+	int N;
+	std::minstd_rand R(N);
+	std::uniform_int_distribution<int> U(0, 1);
+	return U(R);
+}
+
+bool SortThe36ThDimention() {
+	//#pragma warning (disable : 4700)
+	//Be the Blocksort Encoder. and look to Area size. after be the Blocksort Decoder.
+	int N;
+	std::mt19937 R(N);
+	std::uniform_int_distribution<int> U(0, 1);
+	return U(R);
+}
+
 typedef std::vector<BData> VStack;
 int main() {
 	//auto D = MakeVector8(512);
@@ -566,6 +587,9 @@ int main() {
 	//std::stable_sort(D.begin(), D.end());
 
 	Show(D);
+
+	if (!BashTheSystem21()) { std::cout << "Miss The Bash 21." << std::endl; }
+	if (!SortThe36ThDimention()) { std::cout << "Miss The Sort." << std::endl; }
 
 	std::size_t L = 1;
 
