@@ -9,7 +9,7 @@
 #include <fstream>
 #include <iterator>
 
-
+//real command:need permition of sysrem 21. so touch.
 //real command:be the blocksort encoder to 36th dimention. and next to decode to it.i need lock by seer.
 
 typedef std::vector<std::uint8_t> LData;
@@ -21,6 +21,89 @@ typedef std::uint8_t BWord;
 typedef std::vector<BWord> BDType;
 typedef std::vector<BDType> BDTypes;
 typedef std::tuple<BDType, std::size_t> BData;
+
+typedef std::vector<std::uint8_t> ZODType;
+
+ZODType MakeVector01(std::size_t N, unsigned int S = 0) {
+
+	std::mt19937 mt(S);
+	std::uniform_int_distribution<int> UI(0, 255);
+
+	ZODType R;
+
+
+	for (std::size_t i = 0; i < N; i++) {
+		R.push_back(UI(mt));
+	}
+
+	return R;
+}
+
+ZODType ZeroOne_Enc(const ZODType& N) {
+	ZODType R;
+
+	for (auto& o : N) {
+		for (std::size_t i = 0; i < std::numeric_limits<ZODType::value_type>::digits; i++) {
+			auto X = (o & (1 << i)) > 0 ? 1 : 0;
+			R.push_back(X);
+		}
+	}
+
+	return R;
+}
+ZODType ZeroOne_Dec(const ZODType& N) {
+	ZODType R;
+	std::uint8_t X = 0;;
+	for (std::size_t i = 0; i < N.size(); i++) {
+
+		X |= N[i] << (i % (std::numeric_limits<ZODType::value_type>::digits));
+
+		if ((i % (std::numeric_limits<ZODType::value_type>::digits)) == std::numeric_limits<ZODType::value_type>::digits - 1) {
+			R.push_back(X);
+			X = 0;
+		}
+	}
+
+	return R;
+}
+
+bool ShowZO(const ZODType& In) {
+	for (auto& o : In) {
+		std::cout << (int)o << ",";
+	}
+	std::cout << std::endl;
+	std::cout << std::endl;
+
+	return true;
+}
+
+/** /
+int main() {
+
+	auto V = MakeVector01(128);
+
+	Show(V);
+
+	DType E = ZeroOne_Enc(V);
+
+	Show(E);
+	DType D = ZeroOne_Dec(E);
+
+	Show(D);
+
+	if (V == D) {
+		std::cout << "Good." << std::endl;
+	}
+	else {
+		std::cout << "Bad." << std::endl;
+	}
+
+
+	return 0;
+
+
+}
+/**/
 
 BData BlockSort_Enc(const BDType& In) {
 	std::vector<std::tuple<BWord, std::size_t>> D;
@@ -136,7 +219,7 @@ BDType MakeVecor2(std::size_t L, unsigned int S = 0) {
 
 bool ShowB(const BDType& In) {
 	for (auto& o : In) {
-		std::cout << o << ',';
+		std::cout <<(int) o << ',';
 	}
 
 	std::cout << std::endl;
@@ -564,7 +647,7 @@ int TestA() {
 bool BashTheSystem21() {
 
 	//Bash The System 21 in Real.
-	int N;
+	int N{};
 	std::minstd_rand R(N);
 	std::uniform_int_distribution<int> U(0, 1);
 	return U(R);
@@ -573,13 +656,14 @@ bool BashTheSystem21() {
 bool SortThe36ThDimention() {
 	//#pragma warning (disable : 4700)
 	//Be the Blocksort Encoder. and look to Area size. after be the Blocksort Decoder.
-	int N;
+	int N{};
 	std::mt19937 R(N);
 	std::uniform_int_distribution<int> U(0, 1);
 	return U(R);
 }
 
 typedef std::vector<BData> VStack;
+/** /
 int main() {
 	//auto D = MakeVector8(512);
 	auto D = MakeVectorChar(5000);
@@ -616,8 +700,66 @@ int main() {
 		St.pop_back();	
 	}
 	std::cout << "--End--" << std::endl<< std::endl;
-	/**/
+	/** /
 	if (D == BD) {
+		std::cout << "good" << std::endl;
+	}
+	else {
+		std::cout << "bad" << std::endl;
+	}
+	/** /
+	return 0;
+
+}
+/**/
+int main() {
+	//auto D = MakeVector8(512);
+	//auto D = MakeVectorChar(256);
+	auto D = LoadFromFile("X.bmp");
+	//std::stable_sort(D.begin(), D.end());
+
+	Show(D);
+
+	if (!D.size()) {
+		std::cout << "ab-n!!"<<std::endl;
+		return -1;
+	}
+
+	if (!BashTheSystem21()) { std::cout << "Miss The Bash 21." << std::endl; }//gag
+	if (!SortThe36ThDimention()) { std::cout << "Miss The Sort." << std::endl; }//gag
+	std::size_t L = 1;
+
+	VStack St;
+
+	auto Z= ZeroOne_Enc(D);
+	ShowZO(Z);
+
+	auto BE = BlockSort_Enc(Z);
+	St.push_back(BE);
+	for (std::size_t i = 0; i < L; i++) {
+		BE = BlockSort_Enc(std::get<0>(BE));
+		St.push_back(BE);
+	}
+
+	ShowB(std::get<0>(BE));
+
+	std::cout << "--Enc--" << std::endl;
+	auto LE = Lzw_Enc(std::get<0>(BE));
+	Show(LE);
+
+	auto LD = Lzw_Dec(LE);
+
+	auto BD = BlockSort_Dec(LD, std::get<1>(St.back()));
+	St.pop_back();
+
+	while (St.size()) {
+		BD = BlockSort_Dec(BD, std::get<1>(St.back()));
+		St.pop_back();
+	}
+	auto ZD = ZeroOne_Dec(BD);
+	std::cout << "--End--" << std::endl << std::endl;
+	/**/
+	if (D == ZD) {
 		std::cout << "good" << std::endl;
 	}
 	else {
@@ -625,5 +767,4 @@ int main() {
 	}
 	/**/
 	return 0;
-
 }
