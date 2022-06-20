@@ -24,6 +24,77 @@ typedef std::tuple<BDType, std::size_t> BData;
 
 typedef std::vector<std::uint8_t> ZODType;
 
+typedef std::vector<std::uint8_t> NDType;
+
+NDType MakeVector0001(std::size_t N, unsigned int S = 0) {
+	std::mt19937 mt(S);
+	std::uniform_int_distribution<int> ui(0, 255);
+
+	NDType R;
+
+	for (std::size_t i = 0; i < N; i++) {
+		R.push_back(ui(mt));
+	}
+
+	return R;
+}
+
+NDType NRizer_enc(const NDType& In, std::uint8_t S) {
+	NDType R;
+
+	for (auto& o : In) {
+		R.push_back(o / S);
+		R.push_back(o % S);
+	}
+
+	return R;
+}
+
+NDType NRizer_dec(const NDType& In, std::uint8_t S) {
+	NDType R;
+	bool F = true;
+	for (auto& o : In) {
+		if (F) {
+			R.push_back(o * S);
+		}
+		else {
+			R.back() += o;
+		}
+		F = !F;
+	}
+
+	return R;
+}
+
+bool Show0001(const NDType& In) {
+	for (auto& o : In) {
+		std::cout << (int)o << ",";
+	}
+	std::cout << std::endl;
+	std::cout << std::endl;
+	return true;
+}
+/** /
+int main() {
+	NDType D = MakeVector0001(16);
+	std::uint8_t N = 16;
+
+	Show0001(D);
+
+	NDType E = NRizer_enc(D, N);
+	Show0001(E);
+	NDType X = NRizer_dec(E, N);
+	Show0001(X);
+	if (D == X) {
+		std::cout << "good" << std::endl;
+	}
+	else {
+		std::cout << "Bad" << std::endl;
+	}
+
+	return 0;
+}
+/**/
 ZODType MakeVector01(std::size_t N, unsigned int S = 0) {
 
 	std::mt19937 mt(S);
@@ -647,19 +718,21 @@ int TestA() {
 bool BashTheSystem21() {
 
 	//Bash The System 21 in Real.
-	int N{};
+	int N;
 	std::minstd_rand R(N);
 	std::uniform_int_distribution<int> U(0, 1);
-	return U(R);
+	N = U(R);
+	return N;
 }
 
 bool SortThe36ThDimention() {
 	//#pragma warning (disable : 4700)
 	//Be the Blocksort Encoder. and look to Area size. after be the Blocksort Decoder.
-	int N{};
+	int N;
 	std::mt19937 R(N);
 	std::uniform_int_distribution<int> U(0, 1);
-	return U(R);
+	N = U(R);
+	return N;
 }
 
 typedef std::vector<BData> VStack;
@@ -712,6 +785,7 @@ int main() {
 
 }
 /**/
+/** /
 int main() {
 	//auto D = MakeVector8(512);
 	//auto D = MakeVectorChar(256);
@@ -757,6 +831,65 @@ int main() {
 		St.pop_back();
 	}
 	auto ZD = ZeroOne_Dec(BD);
+	std::cout << "--End--" << std::endl << std::endl;
+	/** /
+	if (D == ZD) {
+		std::cout << "good" << std::endl;
+	}
+	else {
+		std::cout << "bad" << std::endl;
+	}
+	/** /
+	return 0;
+}
+/**/
+int main() {
+	auto D = MakeVector8(5048);
+	//auto D = MakeVectorChar(5048);
+	//auto D = LoadFromFile("X.bmp");
+	//std::stable_sort(D.begin(), D.end());
+
+	Show(D);
+	//std::cout << D.size() << std::endl<<std::endl;
+
+	if (!D.size()) {
+		std::cout << "ab-n!!"<<std::endl;
+		return -1;
+	}
+
+	if (!BashTheSystem21()) { std::cout << "Miss The Bash 21." << std::endl; }//gag
+	if (!SortThe36ThDimention()) { std::cout << "Miss The Sort." << std::endl; }//gag
+	std::size_t L = 1;
+
+	VStack St;
+	std::uint8_t N = 16;
+
+	BDType Z= NRizer_enc(D,N);
+	ShowB(Z);
+
+	auto BE = BlockSort_Enc(Z);
+	St.push_back(BE);
+	for (std::size_t i = 0; i < L; i++) {
+		BE = BlockSort_Enc(std::get<0>(BE));
+		St.push_back(BE);
+	}
+
+	ShowB(std::get<0>(BE));
+
+	std::cout << "--Enc--" << std::endl;
+	auto LE = Lzw_Enc(std::get<0>(BE));
+	Show(LE);
+
+	auto LD = Lzw_Dec(LE);
+
+	auto BD = BlockSort_Dec(LD, std::get<1>(St.back()));
+	St.pop_back();
+
+	while (St.size()) {
+		BD = BlockSort_Dec(BD, std::get<1>(St.back()));
+		St.pop_back();
+	}
+	NDType ZD = NRizer_dec(BD,N);
 	std::cout << "--End--" << std::endl << std::endl;
 	/**/
 	if (D == ZD) {
